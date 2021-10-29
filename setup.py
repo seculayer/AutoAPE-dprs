@@ -1,72 +1,52 @@
 # -*- coding: utf-8 -*-
 # Author : Jin Kim
-# e-mail : jinkim@seculayer.co.kr
-# Powered by Seculayer © 2021 Service Model Team
-######################################################################################
+# e-mail : jin.kim@seculayer.com
+# Powered by Seculayer © 2021 AI Service Model Team, R&D Center.
+from typing import List
 
 from setuptools import setup, find_packages
 
-from dprs.common.utils.FileUtils import FileUtils
-from dprs.common.tools.VersionManagement import VersionManagement
 
-######################################################################################
-MODULE_NM = "dprs"
-version_manager = VersionManagement(FileUtils.get_realpath(file=__file__)+"/"+MODULE_NM)
+class APEPythonSetup(object):
+    def __init__(self):
+        self.module_nm = "dprs"
+        self.version = "1.0.0"
+
+    @staticmethod
+    def get_require_packages() -> List[str]:
+        f = open("./requirements.txt", "r")
+        require_packages = f.readlines()
+        f.close()
+        return require_packages
+
+    @staticmethod
+    def get_packages() -> List[str]:
+        return find_packages(
+            exclude=[
+                "build", "tests", "scripts", "dists"
+            ],
+        )
+
+    def setup(self) -> None:
+        setup(
+            name=self.module_nm,
+            version=self.version,
+            description="",
+            author="Jin Kim",
+            author_email="jin.kim@seculayer.com",
+            packages=self.get_packages(),
+            package_dir={
+                "conf": "conf",
+                "resources": "resources"
+            },
+            python_requires='>3.7',
+            package_data={
+                # self.module_nm: FILE_LIST
+            },
+            install_requires=self.get_require_packages(),
+            zip_safe=False,
+        )
 
 
-VERSION = version_manager.VERSION
-
-print(version_manager.print_version())
-print("building {}....".format(MODULE_NM))
-######################################################################################
-# required packages
-f = open("requirements.txt", "r")
-REQUIRED_PACKAGES = f.readlines()
-f.close()
-######################################################################################
-print("-------------------------------------------------------------------------------")
-print("--- Additional File list ---")
-# Additional file list
-FILE_LIST = [FileUtils.get_realpath(file=__file__)+"/"+MODULE_NM+"/VERSION"]
-FILE_LIST += FileUtils.read_dir(
-    directory=FileUtils.get_realpath(file=__file__) + "/dprs/resources/conf", ext=".xml"
-)
-FILE_LIST += FileUtils.read_dir(
-    directory=FileUtils.get_realpath(file=__file__) + "/dprs/resources", ext=".json"
-)
-print(FILE_LIST)
-print("-------------------------------------------------------------------------------")
-######################################################################################
-# build package list
-packages = find_packages(
-        exclude=[
-            "build", "tests", "scripts", "dists"
-        ],
-    )
-print("--- sub package list ---")
-print(packages)
-print("-------------------------------------------------------------------------------")
-######################################################################################
-# setup script
-# wheel command
-# python setup.py bdist_wheel
-
-setup(
-    name=MODULE_NM,
-    version=VERSION,
-    description="",
-    author="Jin Kim",
-    author_email="jinkim@seculayer.co.kr",
-    packages=packages,
-    package_dir={
-        "conf": "conf",
-        "resources": "resources"
-    },
-    python_requires='>3.5.2',
-    package_data={
-        MODULE_NM: FILE_LIST
-    },
-    install_requires=REQUIRED_PACKAGES,
-    zip_safe=False,
-)
-######################################################################################
+if __name__ == '__main__':
+    APEPythonSetup().setup()
