@@ -17,4 +17,4 @@ export PYTHONPATH=$DPRS_LIB_PATH
 KEY=${1}
 WORKER_IDX=${2}
 
-/usr/local/bin/python3.7 -m mars.DataProcessRecommender ${KEY} ${WORKER_IDX}
+/usr/local/bin/python3.7 -m dprs.DataProcessRecommender ${KEY} ${WORKER_IDX}
