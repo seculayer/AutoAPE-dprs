@@ -2,12 +2,12 @@
 # Author : Jin Kim
 # e-mail : jin.kim@seculayer.com
 # Powered by Seculayer © 2021 AI Service Model Team, R&D Center.
+import http.client
 import json
 from typing import Dict
 
-from dprs.common.info.DPRSJobInfo import DPRSJobInfo
-from dprs.common.Constants import Constants
 from dprs.common.Common import Common
+from dprs.common.Constants import Constants
 from dprs.manager.SFTPClientManager import SFTPClientManager
 from dprs.recommender.dp.RandomDataProcessor import RandomDataProcessor
 from dprs.recommender.fs.RandomFeatureSelection import RandomFeatureSelection
@@ -20,6 +20,9 @@ class DPRSManager(object):
 
         self.mrms_sftp_manager: SFTPClientManager = SFTPClientManager(
             "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT), Constants.MRMS_USER, Constants.MRMS_PASSWD)
+
+        self.http_client: http.client.HTTPConnection = http.client.HTTPConnection(
+            Constants.MRMS_SVC, Constants.MRMS_REST_PORT)
 
         self.job_info: Dict = self.load_job_info(job_id)
         self.dataset_meta: Dict = self.load_meta_info(self.job_info.get("data_anls_info").get("dataset_id"))
@@ -38,6 +41,15 @@ class DPRSManager(object):
     def recommender(self):
         feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"))
         functions = RandomDataProcessor().recommend(feature_selection)
+
+        body_json = {
+            "data_analysis_id": self.job_info.get("data_analysis_id"),
+            "data_analysis_json": functions,
+        }
+        self.http_client.request("POST", "/mrms/insert_dp_anls_info", body=json.dumps(body_json))
+        response = self.http_client.getresponse()
+        self.logger.info("{} {} {}".format(response.status, response.reason, response.read()))
+
 
     def terminate(self):
         self.mrms_sftp_manager.close()
