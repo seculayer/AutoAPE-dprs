@@ -24,7 +24,7 @@
     <!-- hosts -->
     <property>
         <name>mrms_svc</name>
-        <value>10.1.35.115:22</value>
+        <value>10.1.35.118</value>
     </property>
     <property>
         <name>mrms_username</name>

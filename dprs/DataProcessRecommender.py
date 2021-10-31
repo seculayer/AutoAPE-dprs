@@ -15,6 +15,7 @@ class DataProcessRecommender(KubePodSafetyTermThread, metaclass=Singleton):
         self.logger.info("DataProcessRecommender Initialized!")
 
     def run(self) -> None:
+        self.dprs_manager.recommender()
         while not self._is_exit():
             time.sleep(1)
 
@@ -22,4 +23,11 @@ class DataProcessRecommender(KubePodSafetyTermThread, metaclass=Singleton):
 
 
 if __name__ == '__main__':
-    dprs = DataProcessRecommender()
+    import sys
+
+    j_id = sys.argv[1]
+    j_idx = sys.argv[2]
+
+    dprs = DataProcessRecommender(j_id, j_idx)
+    dprs.start()
+    dprs.join()

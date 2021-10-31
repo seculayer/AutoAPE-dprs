@@ -18,6 +18,8 @@ class Constants(metaclass=Singleton):
 
     # Directories
     DIR_DATA_ROOT = _CONFIG.get("dir_data_root")
+    DIR_DATA_ANALYZER = DIR_DATA_ROOT + _CONFIG.get("dir_dprs", "/dprs")
+    DIR_DIVISION_PATH = "/eyeCloudAI/data/processing/ape/division"
 
     # Logs
     DIR_LOG = _CONFIG.get("dir_log", "./logs")
@@ -28,6 +30,8 @@ class Constants(metaclass=Singleton):
     MRMS_SVC = _CONFIG.get("mrms_svc")
     MRMS_USER = _CONFIG.get("mrms_username")
     MRMS_PASSWD = _CONFIG.get("mrms_password")
+    MRMS_SFTP_PORT = 22
+    MRMS_REST_PORT = 31920
 
 
 if __name__ == '__main__':
