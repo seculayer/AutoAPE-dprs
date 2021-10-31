@@ -27,6 +27,7 @@ class DPRSManager(object):
         self.job_info: Dict = self.load_job_info(job_id)
         self.dataset_meta: Dict = self.load_meta_info(self.job_info.get("data_anls_info").get("dataset_id"))
 
+        self.current = 0
         self.logger.info("DPRSManager initialized.")
 
     def load_job_info(self, job_id):
@@ -39,17 +40,27 @@ class DPRSManager(object):
         return self.mrms_sftp_manager.load_json_data(filename)
 
     def recommender(self):
-        feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"))
-        functions = RandomDataProcessor().recommend(feature_selection)
+        results = list()
+        for i in range(1):
+            feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"))
+            functions = RandomDataProcessor().recommend(feature_selection)
 
-        body_json = {
-            "data_analysis_id": self.job_info.get("data_analysis_id"),
-            "data_analysis_json": functions,
-        }
-        self.http_client.request("POST", "/mrms/insert_dp_anls_info", body=json.dumps(body_json))
+            body_json = {
+                "data_analysis_id": self.job_info.get("data_analysis_id"),
+                "data_analysis_json": functions,
+            }
+            results.append(body_json)
+
+        self.http_client.request("POST", "/mrms/insert_dp_anls_info", body=json.dumps(results))
         response = self.http_client.getresponse()
         self.logger.info("{} {} {}".format(response.status, response.reason, response.read()))
 
+        f = self.mrms_sftp_manager.get_client().open(
+            "{}/DPRS_{}_{}.info".format(Constants.DIR_DIVISION_PATH, self.job_info.get("project_id"), self.current),
+            "w"
+        )
+        f.write(json.dumps(results, indent=2))
+        f.close()
 
     def terminate(self):
         self.mrms_sftp_manager.close()
