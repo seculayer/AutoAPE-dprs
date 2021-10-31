@@ -2,13 +2,17 @@
     <!-- app path setting -->
     <property>
         <name>dir_data_root</name>
-        <value>/home/eyecloudai/automl/dev/automl-dprs/data</value>
+        <value>/eyeCloudAI/data</value>
         <description>Data root directory</description>
+    </property>
+    <property>
+        <name>ape.features.dir</name>
+        <value>/processing/ape/division</value>
     </property>
     <!-- log setting -->
     <property>
         <name>dir_log</name>
-        <value>/home/eyecloudai/automl/dev/automl-dprs/logs</value>
+        <value>/eyeCloudAI/logs</value>
         <description>None</description>
     </property>
     <property>
@@ -24,11 +28,19 @@
     <!-- hosts -->
     <property>
         <name>mrms_svc</name>
-        <value>10.1.35.118</value>
+        <value>mrms-svc</value>
+    </property>
+    <property>
+        <name>mrms_sftp_port</name>
+        <value>10022</value>
+    </property>
+    <property>
+        <name>mrms_rest_port</name>
+        <value>9200</value>
     </property>
     <property>
         <name>mrms_username</name>
-        <value>Kmw/y3YWiiO7gJ/zqMvCuw==</value>
+        <value>HE12RmzKHQtH3bL7tTRqCg==</value>
     </property>
     <property>
         <name>mrms_password</name>
