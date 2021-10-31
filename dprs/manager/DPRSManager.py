@@ -22,12 +22,13 @@ class DPRSManager(object):
             "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT), Constants.MRMS_USER, Constants.MRMS_PASSWD)
 
         self.job_info: Dict = self.load_job_info(job_id)
-        self.dataset_meta: Dict = self.load_meta_info(self.job_info.get("dataset_id"))
+        self.dataset_meta: Dict = self.load_meta_info(self.job_info.get("data_anls_info").get("dataset_id"))
 
         self.logger.info("DPRSManager initialized.")
 
     def load_job_info(self, job_id):
-        filename = "{}/DPRS_{}.job".format(Constants.DIR_DIVISION_PATH, job_id)
+        filename = "{}/RCMD_{}.job".format(Constants.DIR_DIVISION_PATH, job_id)
+        print(filename)
         return self.mrms_sftp_manager.load_json_data(filename)
 
     def load_meta_info(self, dataset_id):
@@ -36,7 +37,10 @@ class DPRSManager(object):
 
     def recommender(self):
         feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"))
-        RandomDataProcessor()
+        functions = RandomDataProcessor().recommend(feature_selection)
+
+    def terminate(self):
+        self.mrms_sftp_manager.close()
 
 
 if __name__ == '__main__':

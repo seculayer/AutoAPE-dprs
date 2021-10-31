@@ -4,6 +4,7 @@
 # Powered by Seculayer © 2021 AI Service Model Team, R&D Center.
 import http.client
 import json
+import random
 
 from dprs.common.Constants import Constants
 
@@ -22,6 +23,7 @@ class RandomDataProcessor(object):
         response.close()
         return data
 
-    @classmethod
-    def recommend(cls):
-        pass
+    def recommend(self, feature_list):
+        for feature in feature_list:
+            feature["cvt_fn"] = random.choice(self.cvt_fn_info)
+        return feature_list

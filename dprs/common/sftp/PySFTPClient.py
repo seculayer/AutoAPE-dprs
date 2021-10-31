@@ -25,6 +25,9 @@ class PySFTPClient(object):
         self.sftp.close()
         self.transport.close()
 
+    def rename(self, src, dst):
+        self.sftp.rename(src, dst)
+
 
 if __name__ == '__main__':
     sftp_client = PySFTPClient("localhost", 22, "Kmw/y3YWiiO7gJ/zqMvCuw==", "jTf6XrqcYX1SAhv9JUPq+w==")
