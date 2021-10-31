@@ -28,7 +28,7 @@ COPY --from=builder "$app/dist/dprs-1.0.0-py3-none-any.whl" \
         /eyeCloudAI/app/ape/dprs/dprs-1.0.0-py3-none-any.whl
 
 RUN pip3.7 install /eyeCloudAI/app/ape/dprs/dprs-1.0.0-py3-none-any.whl --no-dependencies  \
-    -t /eyeCloudAI/app/ape/dprs/lib \
+    -t /eyeCloudAI/app/ape/dprs \
     && rm /eyeCloudAI/app/ape/dprs/dprs-1.0.0-py3-none-any.whl
 
 RUN groupadd -g 1000 aiuser
