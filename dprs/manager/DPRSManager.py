@@ -46,13 +46,14 @@ class DPRSManager(object):
         response = self.http_client.getresponse()
         return response.read().decode("utf-8").replace("\n", "")
 
-    def recommender(self):
+    def recommender(self, job_id):
         results = list()
         for i in range(random.randint(1, 3)):
             feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"))
             functions = RandomDataProcessor().recommend(feature_selection)
 
             body_json = {
+                "project_id": job_id,
                 "data_analysis_id": self.job_info.get("data_analysis_id"),
                 "dp_analysis_id": self.get_uuid(),
                 "data_analysis_json": functions,
