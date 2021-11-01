@@ -4,6 +4,7 @@
 # Powered by Seculayer © 2021 AI Service Model Team, R&D Center.
 import http.client
 import json
+import random
 from typing import Dict
 
 from dprs.common.Common import Common
@@ -39,14 +40,20 @@ class DPRSManager(object):
         filename = "{}/DA_META_{}.info".format(Constants.DIR_DIVISION_PATH, dataset_id)
         return self.mrms_sftp_manager.load_json_data(filename)
 
+    def get_uuid(self):
+        self.http_client.request("GET", "/mrms/get_uuid")
+        response = self.http_client.getresponse()
+        return response.read().decode("utf-8").replace("\n", "")
+
     def recommender(self):
         results = list()
-        for i in range(1):
+        for i in range(random.randint(1, 3)):
             feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"))
             functions = RandomDataProcessor().recommend(feature_selection)
 
             body_json = {
                 "data_analysis_id": self.job_info.get("data_analysis_id"),
+                "dp_analysis_id": self.get_uuid(),
                 "data_analysis_json": functions,
             }
             results.append(body_json)
