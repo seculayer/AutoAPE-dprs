@@ -25,6 +25,7 @@ class DPRSManager(object):
         self.http_client: http.client.HTTPConnection = http.client.HTTPConnection(
             Constants.MRMS_SVC, Constants.MRMS_REST_PORT)
 
+        self.job_id = job_id
         self.job_info: Dict = self.load_job_info(job_id)
         self.dataset_meta: Dict = self.load_meta_info(self.job_info.get("data_anls_info").get("dataset_id"))
 
@@ -71,6 +72,14 @@ class DPRSManager(object):
 
     def terminate(self):
         self.mrms_sftp_manager.close()
+
+    def get_terminate(self) -> bool:
+        self.http_client.request("GET", "/mrms/get_proj_sttus_cd?project_id={}".format(self.job_id))
+        response = self.http_client.getresponse()
+        status = response.read().decode("utf-8")
+        if status == Constants.STATUS_PROJECT_COMPLETE or status == Constants.STATUS_PROJECT_ERROR:
+            return True
+        return False
 
 
 if __name__ == '__main__':

@@ -33,6 +33,9 @@ class Constants(metaclass=Singleton):
     MRMS_SFTP_PORT = int(_CONFIG.get("mrms_sftp_port", "10022"))
     MRMS_REST_PORT = int(_CONFIG.get("mrms_rest_port", "9200"))
 
+    STATUS_PROJECT_COMPLETE = "8"
+    STATUS_PROJECT_ERROR = "9"
+
 
 if __name__ == '__main__':
     print(Constants.DIR_DATA_ROOT)
