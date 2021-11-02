@@ -18,7 +18,7 @@ class DataProcessRecommender(KubePodSafetyTermThread, metaclass=Singleton):
     def run(self) -> None:
         self.dprs_manager.recommender(job_id=self.job_id)
         while not self.dprs_manager.get_terminate():
-            time.sleep(1)
+            time.sleep(10)
 
         self.logger.info("DataProcessRecommender terminate!")
 
