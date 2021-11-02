@@ -9,7 +9,7 @@
 APP_PATH=/eyeCloudAI/app/ape
 
 DPRS_LIB_PATH=$APP_PATH/dprs/lib
-DPRS_PATH==$APP_PATH/dprs
+DPRS_PATH=$APP_PATH/dprs
 ####
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 export CUDA_HOME=/usr/local/cuda
