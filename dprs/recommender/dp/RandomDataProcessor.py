@@ -14,7 +14,7 @@ class RandomDataProcessor(object):
         self.http_client: http.client.HTTPConnection = http.client.HTTPConnection(
             Constants.MRMS_SVC, Constants.MRMS_REST_PORT)
         self.cvt_fn_info = self.get_cvt_fn()
-        self.COMMON_FN_LIST = ["NotNormal", "OneHotEncode"]
+        self.COMMON_FN_LIST = ["OneHotEncode"]
         self.NUMERIC_FN_LIST = ["NotNormal", "OneHotEncode", "ZScroeNormal", "PortNormal", "MinMaxNormal"]
         self.LABEL_FN_LIST = ["OneHotEncode"]
 

@@ -4,9 +4,11 @@
 # Powered by Seculayer © 2021 AI Service Model Team, R&D Center.
 import random
 from typing import List, Dict
+from dprs.common.Common import Common
 
 
 class RandomFeatureSelection(object):
+    Logger = Common.LOGGER.get_logger()
     @staticmethod
     def recommend(meta_list: List[Dict], target_field: str):
         target = []
@@ -17,10 +19,17 @@ class RandomFeatureSelection(object):
                 target.append(meta)
             else:
                 none_target.append(meta)
+        RandomFeatureSelection.Logger.info("target : {}".format(target))
+        RandomFeatureSelection.Logger.info("non_target : {}".format(none_target))
 
         max_features = len(none_target)
         selections = random.sample(none_target, random.randint(1, max_features))
 
-        return target.extend(selections)
+        RandomFeatureSelection.Logger.info("max_feature : {}".format(max_features))
+        RandomFeatureSelection.Logger.info("selection : {}".format(selections))
+
+        rst = target + selections
+        RandomFeatureSelection.Logger.info("rst : {}".format(rst))
+        return rst
 
 

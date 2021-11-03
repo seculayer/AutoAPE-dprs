@@ -50,7 +50,8 @@ class DPRSManager(object):
         results = list()
         self.http_client.request("POST", "/mrms/get_target_field", body=json.dumps({"project_id": job_id}))
         response = self.http_client.getresponse()
-        project_target_field = response.read().decode("utf-8")
+        project_target_field = response.read().decode("utf-8").replace("\n", "").replace("\"", "")
+        self.logger.info("project_target_field: {}".format(project_target_field))
 
         for i in range(random.randint(1, 3)):
             feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"), project_target_field)
