@@ -8,9 +8,19 @@ from typing import List, Dict
 
 class RandomFeatureSelection(object):
     @staticmethod
-    def recommend(meta_list: List[Dict]):
-        max_features = len(meta_list)
+    def recommend(meta_list: List[Dict], target_field: str):
+        target = []
+        none_target = []
 
-        return random.sample(meta_list, random.randint(1, max_features))
+        for idx, meta in enumerate(meta_list):
+            if meta.get("field_nm") == target_field:
+                target.append(meta)
+            else:
+                none_target.append(meta)
+
+        max_features = len(none_target)
+        selections = random.sample(none_target, random.randint(1, max_features))
+
+        return target.extend(selections)
 
 

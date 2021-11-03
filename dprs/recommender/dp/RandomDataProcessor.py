@@ -16,6 +16,7 @@ class RandomDataProcessor(object):
         self.cvt_fn_info = self.get_cvt_fn()
         self.COMMON_FN_LIST = ["NotNormal", "OneHotEncode"]
         self.NUMERIC_FN_LIST = ["NotNormal", "OneHotEncode", "ZScroeNormal", "PortNormal", "MinMaxNormal"]
+        self.LABEL_FN_LIST = ["OneHotEncode"]
 
     def get_cvt_fn(self):
         self.http_client.request("GET", "/mrms/get_cvt_fn")
@@ -30,14 +31,22 @@ class RandomDataProcessor(object):
     def recommend(self, feature_list):
         result = list()
 
-        for feature in feature_list:
+        for idx, feature in enumerate(feature_list):
             field = dict()
             field["name"] = feature.get("field_nm")
             field["field_sn"] = feature.get("field_idx")
             if feature.get("field_type") == "string":
-                class_nm = random.choice(self.COMMON_FN_LIST)
+                if idx == 0:
+                    # Case Target
+                    class_nm = random.choice(self.LABEL_FN_LIST)
+                else:
+                    class_nm = random.choice(self.COMMON_FN_LIST)
             else:
-                class_nm = random.choice(self.NUMERIC_FN_LIST)
+                if idx == 0:
+                    # Case Target
+                    class_nm = random.choice(self.LABEL_FN_LIST)
+                else:
+                    class_nm = random.choice(self.NUMERIC_FN_LIST)
             field["functions"] = self.cvt_fn_info[class_nm]
             field["statistic"] = {
                 feature.get("field_nm"): field.get("statistics")

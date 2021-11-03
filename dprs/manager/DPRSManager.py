@@ -48,8 +48,13 @@ class DPRSManager(object):
 
     def recommender(self, job_id):
         results = list()
+        self.http_client.request("POST", "/mrms/get_target_field", body=json.dumps({"project_id": job_id}))
+        response = self.http_client.getresponse()
+        project_target_field = response.read().decode("utf-8")
+
         for i in range(random.randint(1, 3)):
-            feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"))
+            feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"), project_target_field)
+            # target idx는 0
             functions = RandomDataProcessor().recommend(feature_selection)
 
             body_json = {
