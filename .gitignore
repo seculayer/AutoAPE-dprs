@@ -1,2 +1,5 @@
 *.iml
 /data
+
+__pypackages__/
+**/__pycache__/
