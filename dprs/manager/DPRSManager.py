@@ -53,7 +53,7 @@ class DPRSManager(object):
         project_target_field = response.read().decode("utf-8").replace("\n", "").replace("\"", "")
         self.logger.info("project_target_field: {}".format(project_target_field))
 
-        for i in range(random.randint(1, 3)):
+        for i in range(random.randint(2, 4)):
             feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"), project_target_field)
             # target idx는 0
             functions = RandomDataProcessor().recommend(feature_selection)
