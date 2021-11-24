@@ -2,7 +2,7 @@
 # Author : Jin Kim
 # e-mail : jin.kim@seculayer.com
 # Powered by Seculayer © 2021 AI Service Model Team, R&D Center.
-import http.client
+import requests as rq
 import json
 import random
 from typing import Dict
@@ -22,8 +22,7 @@ class DPRSManager(object):
         self.mrms_sftp_manager: SFTPClientManager = SFTPClientManager(
             "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT), Constants.MRMS_USER, Constants.MRMS_PASSWD)
 
-        self.http_client: http.client.HTTPConnection = http.client.HTTPConnection(
-            Constants.MRMS_SVC, Constants.MRMS_REST_PORT)
+        self.rest_root_url = f"http://{Constants.MRMS_SVC}:{Constants.MRMS_REST_PORT}"
 
         self.job_id = job_id
         self.job_info: Dict = self.load_job_info(job_id)
@@ -42,15 +41,13 @@ class DPRSManager(object):
         return self.mrms_sftp_manager.load_json_data(filename)
 
     def get_uuid(self):
-        self.http_client.request("GET", "/mrms/get_uuid")
-        response = self.http_client.getresponse()
-        return response.read().decode("utf-8").replace("\n", "")
+        response = rq.get(f"{self.rest_root_url}/mrms/get_uuid")
+        return response.text.replace("\n", "")
 
     def recommender(self, job_id):
         results = list()
-        self.http_client.request("POST", "/mrms/get_target_field", body=json.dumps({"project_id": job_id}))
-        response = self.http_client.getresponse()
-        project_target_field = response.read().decode("utf-8").replace("\n", "").replace("\"", "")
+        response = rq.post(f"{self.rest_root_url}/mrms/get_target_field", json={"project_id": job_id})
+        project_target_field = response.text.replace("\n", "").replace("\"", "")
         self.logger.info("project_target_field: {}".format(project_target_field))
 
         for i in range(random.randint(2, 4)):
@@ -66,9 +63,8 @@ class DPRSManager(object):
             }
             results.append(body_json)
 
-        self.http_client.request("POST", "/mrms/insert_dp_anls_info", body=json.dumps(results))
-        response = self.http_client.getresponse()
-        self.logger.info("{} {} {}".format(response.status, response.reason, response.read()))
+        response = rq.post(f"{self.rest_root_url}/mrms/insert_dp_anls_info", json=results)
+        self.logger.info("{} {} {}".format(response.status_code, response.reason, response.text))
 
         f = self.mrms_sftp_manager.get_client().open(
             "{}/DPRS_{}_{}.info".format(Constants.DIR_DIVISION_PATH, self.job_info.get("project_id"), self.current),
@@ -81,9 +77,8 @@ class DPRSManager(object):
         self.mrms_sftp_manager.close()
 
     def get_terminate(self) -> bool:
-        self.http_client.request("GET", "/mrms/get_proj_sttus_cd?project_id={}".format(self.job_id))
-        response = self.http_client.getresponse()
-        status = response.read().decode("utf-8")
+        response = rq.get(f"{self.rest_root_url}/mrms/get_proj_sttus_cd?project_id={self.job_id}")
+        status = response.text
         if status == Constants.STATUS_PROJECT_COMPLETE or status == Constants.STATUS_PROJECT_ERROR:
             return True
         return False
