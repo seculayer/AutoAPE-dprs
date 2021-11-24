@@ -11,4 +11,4 @@ class LongToIP(AbstractConvert):
             return [".".join(str(data >> (i << 3) & 0xFF) for i in reversed(range(4)))]
         except Exception as e:
             logging.error(e)
-            return [0]  # ?
+            return ["0.0.0.0"]  # ?
