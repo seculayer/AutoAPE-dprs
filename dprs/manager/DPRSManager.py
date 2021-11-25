@@ -42,13 +42,14 @@ class DPRSManager(object):
 
     def get_uuid(self):
         response = rq.get(f"{self.rest_root_url}/mrms/get_uuid")
+        self.logger.info(f"get uuid : {response.status_code} {response.reason} {response.text}")
         return response.text.replace("\n", "")
 
     def recommender(self, job_id):
         results = list()
         response = rq.post(f"{self.rest_root_url}/mrms/get_target_field", json={"project_id": job_id})
         project_target_field = response.text.replace("\n", "").replace("\"", "")
-        self.logger.info("project_target_field: {}".format(project_target_field))
+        self.logger.info(f"get target field: {response.status_code} {response.reason} {project_target_field}")
 
         for i in range(random.randint(2, 4)):
             feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"), project_target_field)
@@ -64,7 +65,7 @@ class DPRSManager(object):
             results.append(body_json)
 
         response = rq.post(f"{self.rest_root_url}/mrms/insert_dp_anls_info", json=results)
-        self.logger.info("{} {} {}".format(response.status_code, response.reason, response.text))
+        self.logger.info(f"insert dp anls info: {response.status_code} {response.reason} {response.text}")
 
         f = self.mrms_sftp_manager.get_client().open(
             "{}/DPRS_{}_{}.info".format(Constants.DIR_DIVISION_PATH, self.job_info.get("project_id"), self.current),

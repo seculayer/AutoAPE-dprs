@@ -21,7 +21,6 @@ class RandomDataProcessor(object):
     def get_cvt_fn(self):
         response = rq.get(f"{self.rest_root_url}/mrms/get_cvt_fn")
         data = json.loads(response.text)
-        response.close()
         result_dict = dict()
         for fn in data:
             result_dict[fn.get("conv_func_cls")] = fn.get("conv_func_tag")
