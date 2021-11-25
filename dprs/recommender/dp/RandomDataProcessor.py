@@ -2,7 +2,8 @@
 # Author : Jin Kim
 # e-mail : jin.kim@seculayer.com
 # Powered by Seculayer © 2021 AI Service Model Team, R&D Center.
-import http.client
+
+import requests as rq
 import json
 import random
 
@@ -11,17 +12,15 @@ from dprs.common.Constants import Constants
 
 class RandomDataProcessor(object):
     def __init__(self):
-        self.http_client: http.client.HTTPConnection = http.client.HTTPConnection(
-            Constants.MRMS_SVC, Constants.MRMS_REST_PORT)
+        self.rest_root_url = f"http://{Constants.MRMS_SVC}:{Constants.MRMS_REST_PORT}"
         self.cvt_fn_info = self.get_cvt_fn()
         self.COMMON_FN_LIST = ["OneHotEncode"]
         self.NUMERIC_FN_LIST = ["NotNormal", "OneHotEncode", "ZScoreNormal", "PortNormal", "MinMaxNormal"]
         self.LABEL_FN_LIST = ["OneHotEncode"]
 
     def get_cvt_fn(self):
-        self.http_client.request("GET", "/mrms/get_cvt_fn")
-        response = self.http_client.getresponse()
-        data = json.loads(response.read())
+        response = rq.get(f"{self.rest_root_url}/mrms/get_cvt_fn")
+        data = json.loads(response.text)
         response.close()
         result_dict = dict()
         for fn in data:
