@@ -2,7 +2,7 @@
 # Author : Jin Kim
 # e-mail : jin.kim@seculayer.com
 # Powered by Seculayer © 2021 AI Service Model Team, R&D Center.
-import http.client
+import requests as rq
 import json
 import random
 from typing import Dict
@@ -22,8 +22,7 @@ class DPRSManager(object):
         self.mrms_sftp_manager: SFTPClientManager = SFTPClientManager(
             "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT), Constants.MRMS_USER, Constants.MRMS_PASSWD)
 
-        self.http_client: http.client.HTTPConnection = http.client.HTTPConnection(
-            Constants.MRMS_SVC, Constants.MRMS_REST_PORT)
+        self.rest_root_url = f"http://{Constants.MRMS_SVC}:{Constants.MRMS_REST_PORT}"
 
         self.job_id = job_id
         self.job_info: Dict = self.load_job_info(job_id)
@@ -42,26 +41,31 @@ class DPRSManager(object):
         return self.mrms_sftp_manager.load_json_data(filename)
 
     def get_uuid(self):
-        self.http_client.request("GET", "/mrms/get_uuid")
-        response = self.http_client.getresponse()
-        return response.read().decode("utf-8").replace("\n", "")
+        response = rq.get(f"{self.rest_root_url}/mrms/get_uuid")
+        self.logger.info(f"get uuid : {response.status_code} {response.reason} {response.text}")
+        return response.text.replace("\n", "")
 
-    def recommender(self):
+    def recommender(self, job_id):
         results = list()
-        for i in range(random.randint(1, 3)):
-            feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"))
+        response = rq.post(f"{self.rest_root_url}/mrms/get_target_field", json={"project_id": job_id})
+        project_target_field = response.text.replace("\n", "").replace("\"", "")
+        self.logger.info(f"get target field: {response.status_code} {response.reason} {project_target_field}")
+
+        for i in range(random.randint(2, 4)):
+            feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"), project_target_field)
+            # target idx는 0
             functions = RandomDataProcessor().recommend(feature_selection)
 
             body_json = {
+                "project_id": job_id,
                 "data_analysis_id": self.job_info.get("data_analysis_id"),
                 "dp_analysis_id": self.get_uuid(),
                 "data_analysis_json": functions,
             }
             results.append(body_json)
 
-        self.http_client.request("POST", "/mrms/insert_dp_anls_info", body=json.dumps(results))
-        response = self.http_client.getresponse()
-        self.logger.info("{} {} {}".format(response.status, response.reason, response.read()))
+        response = rq.post(f"{self.rest_root_url}/mrms/insert_dp_anls_info", json=results)
+        self.logger.info(f"insert dp anls info: {response.status_code} {response.reason} {response.text}")
 
         f = self.mrms_sftp_manager.get_client().open(
             "{}/DPRS_{}_{}.info".format(Constants.DIR_DIVISION_PATH, self.job_info.get("project_id"), self.current),
@@ -74,9 +78,8 @@ class DPRSManager(object):
         self.mrms_sftp_manager.close()
 
     def get_terminate(self) -> bool:
-        self.http_client.request("GET", "/mrms/get_proj_sttus_cd?project_id={}".format(self.job_id))
-        response = self.http_client.getresponse()
-        status = response.read().decode("utf-8")
+        response = rq.get(f"{self.rest_root_url}/mrms/get_proj_sttus_cd?project_id={self.job_id}")
+        status = response.text
         if status == Constants.STATUS_PROJECT_COMPLETE or status == Constants.STATUS_PROJECT_ERROR:
             return True
         return False
