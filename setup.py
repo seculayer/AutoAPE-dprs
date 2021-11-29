@@ -2,6 +2,11 @@
 # Author : Jin Kim
 # e-mail : jin.kim@seculayer.com
 # Powered by Seculayer © 2021 AI Service Model Team, R&D Center.
+
+# ----------------------------------------------------------------------------------------------
+# AutoML - DPRS(Data Pre-Processing Recommend Server) Setup Script
+# ----------------------------------------------------------------------------------------------
+
 from typing import List
 
 from setuptools import setup, find_packages
@@ -49,4 +54,9 @@ class APEPythonSetup(object):
 
 
 if __name__ == '__main__':
+    print("    ____  ____  ____  _____")
+    print("   / __ \/ __ \/ __ \/ ___/")
+    print("  / / / / /_/ / /_/ /\__ \ ")
+    print(" / /_/ / ____/ _, _/___/ / ")
+    print("/_____/_/   /_/ |_|/____/  ")
     APEPythonSetup().setup()
