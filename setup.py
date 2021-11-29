@@ -36,7 +36,8 @@ class APEPythonSetup(object):
         setup(
             name=self.module_nm,
             version=self.version,
-            description="",
+            description="SecuLayer Inc. AutoML Project \n"
+                        "Module : DPRS(Data Pre-Processing Recommend Server)",
             author="Jin Kim",
             author_email="jin.kim@seculayer.com",
             packages=self.get_packages(),
