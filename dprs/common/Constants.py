@@ -36,6 +36,9 @@ class Constants(metaclass=Singleton):
     STATUS_PROJECT_COMPLETE = "8"
     STATUS_PROJECT_ERROR = "9"
 
+    RCMD_MIN_COUNT = int(_CONFIG.get("rcmd_min_count", "1"))
+    RCMD_MAX_COUNT = int(_CONFIG.get("rcmd_max_count", "2"))
+
 
 if __name__ == '__main__':
     print(Constants.DIR_DATA_ROOT)

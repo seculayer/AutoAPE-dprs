@@ -46,4 +46,13 @@
         <name>mrms_password</name>
         <value>jTf6XrqcYX1SAhv9JUPq+w==</value>
     </property>
+    <!-- recommend -->
+    <property>
+        <name>rcmd_min_count</name>
+        <value>1</value>
+    </property>
+    <property>
+        <name>rcmd_max_count</name>
+        <value>2</value>
+    </property>
 </configuration>

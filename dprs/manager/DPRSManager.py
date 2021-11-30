@@ -51,7 +51,7 @@ class DPRSManager(object):
         project_target_field = response.text.replace("\n", "").replace("\"", "")
         self.logger.info(f"get target field: {response.status_code} {response.reason} {project_target_field}")
 
-        for i in range(random.randint(2, 4)):
+        for i in range(random.randint(Constants.RCMD_MIN_COUNT, Constants.RCMD_MAX_COUNT)):
             feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"), project_target_field)
             # target idx는 0
             functions = RandomDataProcessor().recommend(feature_selection)
