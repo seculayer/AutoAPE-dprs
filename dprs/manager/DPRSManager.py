@@ -19,8 +19,7 @@ class DPRSManager(object):
     def __init__(self, job_id, job_idx):
         self.logger = Common.LOGGER.get_logger()
 
-        self.mrms_sftp_manager: SFTPClientManager = SFTPClientManager(
-            "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT), Constants.MRMS_USER, Constants.MRMS_PASSWD)
+        self.mrms_sftp_manager = None
 
         self.rest_root_url = f"http://{Constants.MRMS_SVC}:{Constants.MRMS_REST_PORT}"
 
@@ -29,6 +28,10 @@ class DPRSManager(object):
         self.dataset_meta: Dict = self.load_meta_info(self.job_info.get("data_anls_info").get("dataset_id"))
 
         self.current = 0
+
+    def initialize(self):
+        self.mrms_sftp_manager: SFTPClientManager = SFTPClientManager(
+            "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT), Constants.MRMS_USER, Constants.MRMS_PASSWD)
         self.logger.info("DPRSManager initialized.")
 
     def load_job_info(self, job_id):
@@ -74,8 +77,14 @@ class DPRSManager(object):
         f.write(json.dumps(results, indent=2))
         f.close()
 
+    def update_project_status(self, status):
+        status_json = {"status": status, "project_id": self.job_id}
+        response = rq.post(f"{self.rest_root_url}/mrms/update_projects_status", json=status_json)
+        self.logger.info(f"update project status: {response.status_code} {response.reason} {response.text}")
+
     def terminate(self):
-        self.mrms_sftp_manager.close()
+        if self.mrms_sftp_manager is not None:
+            self.mrms_sftp_manager.close()
 
     def get_terminate(self) -> bool:
         response = rq.get(f"{self.rest_root_url}/mrms/get_proj_sttus_cd?project_id={self.job_id}")
