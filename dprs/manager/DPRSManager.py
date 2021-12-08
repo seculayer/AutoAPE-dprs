@@ -24,14 +24,18 @@ class DPRSManager(object):
         self.rest_root_url = f"http://{Constants.MRMS_SVC}:{Constants.MRMS_REST_PORT}"
 
         self.job_id = job_id
-        self.job_info: Dict = self.load_job_info(job_id)
-        self.dataset_meta: Dict = self.load_meta_info(self.job_info.get("data_anls_info").get("dataset_id"))
+        self.job_info = None
+        self.dataset_meta = None
 
         self.current = 0
 
     def initialize(self):
         self.mrms_sftp_manager: SFTPClientManager = SFTPClientManager(
             "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT), Constants.MRMS_USER, Constants.MRMS_PASSWD)
+
+        self.job_info: Dict = self.load_job_info(self.job_id)
+        self.dataset_meta: Dict = self.load_meta_info(self.job_info.get("data_anls_info").get("dataset_id"))
+
         self.logger.info("DPRSManager initialized.")
 
     def load_job_info(self, job_id):
