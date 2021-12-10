@@ -46,9 +46,7 @@ class RandomDataProcessor(object):
                 else:
                     class_nm = random.choice(self.NUMERIC_FN_LIST)
             field["functions"] = self.cvt_fn_info[class_nm]
-            field["statistic"] = {
-                feature.get("field_nm"): field.get("statistics")
-            }
+            field["statistic"] = feature.get("statistics")
             result.append(field)
         return result
 

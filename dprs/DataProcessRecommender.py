@@ -20,14 +20,14 @@ class DataProcessRecommender(KubePodSafetyTermThread, metaclass=Singleton):
             self.logger.error(e, exc_info=True)
 
     def run(self) -> None:
+        try:
+            self.dprs_manager.recommender(job_id=self.job_id)
+        except Exception as e:
+            self.logger.error(e, exc_info=True)
+            self.dprs_manager.update_project_status(Constants.STATUS_PROJECT_ERROR)
+
         while not self.dprs_manager.get_terminate():
-            try:
-                self.dprs_manager.recommender(job_id=self.job_id)
-            except Exception as e:
-                self.logger.error(e, exc_info=True)
-                self.dprs_manager.update_project_status(Constants.STATUS_PROJECT_ERROR)
-            finally:
-                time.sleep(10)
+            time.sleep(10)
 
         self.logger.info("DataProcessRecommender terminate!")
         self.dprs_manager.terminate()

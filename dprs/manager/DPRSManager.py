@@ -39,12 +39,12 @@ class DPRSManager(object):
         self.logger.info("DPRSManager initialized.")
 
     def load_job_info(self, job_id):
-        filename = "{}/RCMD_{}.job".format(Constants.DIR_DIVISION_PATH, job_id)
+        filename = f"{Constants.DIR_JOB_PATH}/{job_id}/RCMD_{job_id}.job"
         print(filename)
         return self.mrms_sftp_manager.load_json_data(filename)
 
     def load_meta_info(self, dataset_id):
-        filename = "{}/DA_META_{}.info".format(Constants.DIR_DIVISION_PATH, dataset_id)
+        filename = f"{Constants.DIR_DA_PATH}/{dataset_id}/DA_META_{dataset_id}.info"
         return self.mrms_sftp_manager.load_json_data(filename)
 
     def get_uuid(self):
@@ -75,7 +75,7 @@ class DPRSManager(object):
         self.logger.info(f"insert dp anls info: {response.status_code} {response.reason} {response.text}")
 
         f = self.mrms_sftp_manager.get_client().open(
-            "{}/DPRS_{}_{}.info".format(Constants.DIR_DIVISION_PATH, self.job_info.get("project_id"), self.current),
+            f"{Constants.DIR_JOB_PATH}/{job_id}/DPRS_{self.job_info.get('project_id')}_{self.current}.info",
             "w"
         )
         f.write(json.dumps(results, indent=2))

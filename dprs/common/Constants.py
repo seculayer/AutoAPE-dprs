@@ -18,8 +18,9 @@ class Constants(metaclass=Singleton):
 
     # Directories
     DIR_DATA_ROOT = _CONFIG.get("dir_data_root", "/eyeCloudAI/data")
-    DIR_DATA_ANALYZER = DIR_DATA_ROOT + _CONFIG.get("dir_dprs", "/dprs")
-    DIR_DIVISION_PATH = DIR_DATA_ROOT + _CONFIG.get("ape.features.dir", "/processing/ape/division")
+    DIR_DIVISION_PATH = DIR_DATA_ROOT + "/processing/ape/division"
+    DIR_JOB_PATH = DIR_DATA_ROOT + "/processing/ape/jobs"
+    DIR_DA_PATH = DIR_DATA_ROOT + "/processing/ape/da"
 
     # Logs
     DIR_LOG = _CONFIG.get("dir_log", "./logs")
