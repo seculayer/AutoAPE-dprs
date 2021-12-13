@@ -14,7 +14,7 @@ class RandomDataProcessor(object):
     def __init__(self):
         self.rest_root_url = f"http://{Constants.MRMS_SVC}:{Constants.MRMS_REST_PORT}"
         self.cvt_fn_info = self.get_cvt_fn()
-        self.COMMON_FN_LIST = ["OneHotEncode"]
+        self.COMMON_FN_LIST = ["SpecialCharExtract"]
         self.NUMERIC_FN_LIST = ["NotNormal", "OneHotEncode", "ZScoreNormal", "PortNormal", "MinMaxNormal"]
         self.LABEL_FN_LIST = ["OneHotEncode"]
 
@@ -45,7 +45,12 @@ class RandomDataProcessor(object):
                     class_nm = random.choice(self.LABEL_FN_LIST)
                 else:
                     class_nm = random.choice(self.NUMERIC_FN_LIST)
-            field["functions"] = self.cvt_fn_info[class_nm]
+            functions: str = self.cvt_fn_info[class_nm]
+            # TODO : temp
+            if class_nm == "SpecialCharExtract":
+                param_idx = functions.find('(')
+                functions = functions[: param_idx + 1] + '128' + functions[param_idx + 1:]
+            field["functions"] = functions
             field["statistic"] = feature.get("statistics")
             result.append(field)
         return result
