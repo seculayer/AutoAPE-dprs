@@ -17,6 +17,7 @@ class RandomDataProcessor(object):
         self.COMMON_FN_LIST = ["SpecialCharExtract"]
         self.NUMERIC_FN_LIST = ["NotNormal", "OneHotEncode", "ZScoreNormal", "PortNormal", "MinMaxNormal"]
         self.LABEL_FN_LIST = ["OneHotEncode"]
+        self.IMAGE_FN_LIST = ["NotNormal"]
 
     def get_cvt_fn(self):
         response = rq.get(f"{self.rest_root_url}/mrms/get_cvt_fn")
@@ -33,18 +34,18 @@ class RandomDataProcessor(object):
             field = dict()
             field["name"] = feature.get("field_nm")
             field["field_sn"] = feature.get("field_idx")
-            if feature.get("field_type") == "string":
-                if idx == 0:
-                    # Case Target
-                    class_nm = random.choice(self.LABEL_FN_LIST)
-                else:
-                    class_nm = random.choice(self.COMMON_FN_LIST)
+
+            if idx == 0:
+                # Case Target
+                class_nm = random.choice(self.LABEL_FN_LIST)
             else:
-                if idx == 0:
-                    # Case Target
-                    class_nm = random.choice(self.LABEL_FN_LIST)
+                if feature.get("field_type") == "string":
+                    class_nm = random.choice(self.COMMON_FN_LIST)
+                elif feature.get("field_type") == "image":
+                    class_nm = random.choice(self.IMAGE_FN_LIST)
                 else:
                     class_nm = random.choice(self.NUMERIC_FN_LIST)
+
             functions: str = self.cvt_fn_info[class_nm]
             # TODO : temp
             if class_nm == "SpecialCharExtract":
