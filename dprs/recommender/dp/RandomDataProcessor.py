@@ -17,7 +17,7 @@ class RandomDataProcessor(object):
         self.COMMON_FN_LIST = ["SpecialCharExtract"]
         self.NUMERIC_FN_LIST = ["NotNormal", "OneHotEncode", "ZScoreNormal", "PortNormal", "MinMaxNormal"]
         self.LABEL_FN_LIST = ["OneHotEncode"]
-        self.IMAGE_FN_LIST = ["NotNormal"]
+        self.IMAGE_FN_LIST = ["MinMaxNormal"]
 
     def get_cvt_fn(self):
         response = rq.get(f"{self.rest_root_url}/mrms/get_cvt_fn")
