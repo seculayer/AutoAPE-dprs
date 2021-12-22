@@ -1,2 +1,2 @@
-# automl-dprs
-Auto ML - DPRS(Data Processing Recommend Server)
+# AutoAPE-dprs
+AutoAPE(Advanced Perceptron Engine) - DPRS(Data Processing Recommend Server)
