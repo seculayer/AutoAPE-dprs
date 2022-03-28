@@ -62,6 +62,7 @@ class DPRSManager(object):
             feature_selection = RandomFeatureSelection().recommend(self.dataset_meta.get("meta"), project_target_field)
             # target idx는 0
             functions = RandomDataProcessor().recommend(feature_selection)
+            self.logger.debug(f"project_id: {job_id}, Recommended: {functions}")
 
             body_json = {
                 "project_id": job_id,
