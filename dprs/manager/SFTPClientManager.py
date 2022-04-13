@@ -5,7 +5,7 @@
 import json
 from typing import List
 
-from dprs.common.sftp.PySFTPClient import PySFTPClient
+from pycmmn.sftp.PySFTPClient import PySFTPClient
 from dprs.common.Constants import Constants
 from dprs.common.Common import Common
 
@@ -13,7 +13,7 @@ from dprs.common.Common import Common
 class SFTPClientManager(object):
     # class : SFTPClientManager
     def __init__(self, service: str, username: str, password: str):
-        self.logger = Common.LOGGER.get_logger()
+        self.logger = Common.LOGGER.getLogger()
         self.service: List[str] = service.split(":")
         self.username = username
         self.password = password

@@ -17,7 +17,7 @@ from dprs.recommender.fs.RandomFeatureSelection import RandomFeatureSelection
 class DPRSManager(object):
     # class : DataAnalyzerManager
     def __init__(self, job_id, job_idx):
-        self.logger = Common.LOGGER.get_logger()
+        self.logger = Common.LOGGER.getLogger()
 
         self.mrms_sftp_manager = None
 
