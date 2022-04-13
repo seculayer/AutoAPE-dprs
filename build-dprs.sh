@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VERSION="1.0.0"
-MODULE_NAME="da"
+MODULE_NAME="dprs"
 REGISTRY_URL="registry.seculayer.com:31500"
 SECRET_PATH="../access_token/token"
 

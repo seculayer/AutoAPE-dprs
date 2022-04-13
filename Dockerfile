@@ -7,8 +7,8 @@ RUN git config --global http.sslVerify false
 
 # pycmmn setup
 # specific branch
-RUN --mount=type=secret,id=token git clone -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" -b SLCAI-54-automl-module https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-dataconvertor.git $app/dataconverter
-#RUN --mount=type=secret,id=token git clone -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-dataconvertor.git $app/dataconverter
+RUN --mount=type=secret,id=token git clone -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" -b SLCAI-54-automl-module https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-pycmmn.git $app/pycmmn
+#RUN --mount=type=secret,id=token git clone -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-pycmmn.git $app/pycmmn
 WORKDIR $app/pycmmn
 RUN pip3.7 install -r requirements.txt -t $app/pycmmn/lib
 RUN python3.7 setup.py bdist_wheel
@@ -17,7 +17,7 @@ RUN python3.7 setup.py bdist_wheel
 # specific branch
 RUN --mount=type=secret,id=token git clone -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" -b SLCAI-54-automl-module https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-dataconverter.git $app/dataconverter
 #RUN --mount=type=secret,id=token git clone -c http.extraHeader="Authorization: Bearer $(cat /run/secrets/token)" https://ssdlc-bitbucket.seculayer.com:8443/scm/slaism/autoape-dataconverter.git $app/dataconverter
-WORKDIR $app/da
+WORKDIR $app/dataconverter
 RUN pip3.7 install -r requirements.txt -t $app/dataconverter/lib
 RUN python3.7 setup.py bdist_wheel
 
