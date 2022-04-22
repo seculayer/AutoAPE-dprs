@@ -8,7 +8,8 @@ from dprs.common.Common import Common
 
 
 class RandomFeatureSelection(object):
-    Logger = Common.LOGGER.get_logger()
+    Logger = Common.LOGGER.getLogger()
+
     @staticmethod
     def recommend(meta_list: List[Dict], target_field: str):
         target = []

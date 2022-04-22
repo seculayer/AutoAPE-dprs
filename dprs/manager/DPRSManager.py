@@ -9,7 +9,7 @@ from typing import Dict
 
 from dprs.common.Common import Common
 from dprs.common.Constants import Constants
-from dprs.manager.SFTPClientManager import SFTPClientManager
+from pycmmn.sftp.SFTPClientManager import SFTPClientManager
 from dprs.recommender.dp.RandomDataProcessor import RandomDataProcessor
 from dprs.recommender.fs.RandomFeatureSelection import RandomFeatureSelection
 
@@ -17,7 +17,7 @@ from dprs.recommender.fs.RandomFeatureSelection import RandomFeatureSelection
 class DPRSManager(object):
     # class : DataAnalyzerManager
     def __init__(self, job_id, job_idx):
-        self.logger = Common.LOGGER.get_logger()
+        self.logger = Common.LOGGER.getLogger()
 
         self.mrms_sftp_manager = None
 
@@ -31,7 +31,9 @@ class DPRSManager(object):
 
     def initialize(self):
         self.mrms_sftp_manager: SFTPClientManager = SFTPClientManager(
-            "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT), Constants.MRMS_USER, Constants.MRMS_PASSWD)
+            "{}:{}".format(Constants.MRMS_SVC, Constants.MRMS_SFTP_PORT),
+            Constants.MRMS_USER, Constants.MRMS_PASSWD, self.logger
+        )
 
         self.job_info: Dict = self.load_job_info(self.job_id)
         self.dataset_meta: Dict = self.load_meta_info(self.job_info.get("data_anls_info").get("dataset_id"))
