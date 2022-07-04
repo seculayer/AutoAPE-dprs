@@ -18,6 +18,7 @@ class RandomDataProcessor(object):
         self.NUMERIC_FN_LIST = ["NotNormal", "OneHotEncode", "ZScoreNormal", "PortNormal", "MinMaxNormal"]
         self.LABEL_FN_LIST = ["OneHotEncode"]
         self.IMAGE_FN_LIST = ["MinMaxNormal"]
+        self.TIME_FN_LIST = ["TimeToSerial"]
 
     def get_cvt_fn(self):
         response = rq.get(f"{self.rest_root_url}/mrms/get_cvt_fn")
@@ -27,22 +28,28 @@ class RandomDataProcessor(object):
             result_dict[fn.get("conv_func_cls")] = fn.get("conv_func_tag")
         return result_dict
 
-    def recommend(self, feature_list):
+    def recommend(self, feature_list, project_purpose_cd):
         result = list()
 
         for idx, feature in enumerate(feature_list):
             field = dict()
             field["name"] = feature.get("field_nm")
             field["field_sn"] = feature.get("field_idx")
+            field["field_type"] = feature.get("field_type")
 
             if idx == 0:
                 # Case Target
-                class_nm = random.choice(self.LABEL_FN_LIST)
+                if project_purpose_cd == "10":  # TA
+                    class_nm = "NotNormal"
+                else:
+                    class_nm = random.choice(self.LABEL_FN_LIST)
             else:
                 if feature.get("field_type") == "string":
                     class_nm = random.choice(self.COMMON_FN_LIST)
                 elif feature.get("field_type") == "image":
                     class_nm = random.choice(self.IMAGE_FN_LIST)
+                elif feature.get("field_type") == "date":
+                    class_nm = random.choice(self.TIME_FN_LIST)
                 else:
                     class_nm = random.choice(self.NUMERIC_FN_LIST)
 
