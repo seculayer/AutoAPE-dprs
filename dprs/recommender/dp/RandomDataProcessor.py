@@ -14,7 +14,7 @@ class RandomDataProcessor(object):
     def __init__(self):
         self.rest_root_url = f"http://{Constants.MRMS_SVC}:{Constants.MRMS_REST_PORT}"
         self.cvt_fn_info = self.get_cvt_fn()
-        self.COMMON_FN_LIST = ["SpecialCharExtract"]
+        self.COMMON_FN_LIST = ["SISpWC", "XSSpWC"]  # , "SpecialCharExtract"]
         self.NUMERIC_FN_LIST = ["NotNormal", "OneHotEncode", "ZScoreNormal", "PortNormal", "MinMaxNormal"]
         self.LABEL_FN_LIST = ["OneHotEncode"]
         self.IMAGE_FN_LIST = ["MinMaxNormal"]
@@ -57,7 +57,11 @@ class RandomDataProcessor(object):
             # TODO : temp
             if class_nm == "SpecialCharExtract":
                 param_idx = functions.find('(')
-                functions = functions[: param_idx + 1] + '128' + functions[param_idx + 1:]
+                functions = functions[: param_idx + 1] + '64' + functions[param_idx + 1:]
+            elif class_nm == "SISpWC" or class_nm == "XSSpWC":
+                param_idx = functions.find('(')
+                functions = functions[: param_idx + 1] + '64,255' + functions[param_idx + 1:]
+
             field["functions"] = functions
             field["statistic"] = feature.get("statistics")
             result.append(field)
