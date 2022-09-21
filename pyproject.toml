@@ -1,9 +1,7 @@
 [tool.poetry]
 name = "dprs"
 version = "1.0.0"
-description = """SecuLayer Inc. AutoML Project
-Module : DPRS(Data Pre-Processing Recommend Server)
-"""
+description = "AutoML: DPRS(Data Pre-Processing Recommend Server)"
 authors = ["Jin Kim <jin.kim@seculayer.com>"]
 include = ["conf"]
 
