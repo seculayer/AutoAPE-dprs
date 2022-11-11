@@ -16,6 +16,17 @@ class RandomDataProcessor(object):
         self.cvt_fn_info = self.get_cvt_fn()
         self.COMMON_FN_LIST = ["SISpWC", "XSSpWC"]  # , "SpecialCharExtract"]
         self.NUMERIC_FN_LIST = ["NotNormal", "OneHotEncode", "ZScoreNormal", "PortNormal", "MinMaxNormal"]
+        self.SPECIFIC_FN_LIST_DICT = {
+            "dga": {
+                "query": "DGAChar2IDX",
+            },
+            "packet": {
+                "query": "DGAChar2IDX",
+                # TODO : need to change function name
+                "TTLs": "TTLsConvertFn",
+                "rtt": "rttConvertFn"
+            }
+        }
         self.LABEL_FN_LIST = ["OneHotEncode"]
         self.IMAGE_FN_LIST = ["MinMaxNormal"]
         self.TIME_FN_LIST = ["TimeToSerial"]
@@ -28,14 +39,24 @@ class RandomDataProcessor(object):
             result_dict[fn.get("conv_func_cls")] = fn.get("conv_func_tag")
         return result_dict
 
-    def recommend(self, feature_list, project_purpose_cd):
+    def recommend(self, feature_list, project_purpose_cd, project_tag_list):
         result = list()
+
+        is_specific_case = dict()
+        for tag in project_tag_list:
+            if "dga" in tag.lower():
+                is_specific_case = self.SPECIFIC_FN_LIST_DICT["dga"]
+                break
+            elif "packet" in tag.lower():
+                is_specific_case = self.SPECIFIC_FN_LIST_DICT["packet"]
+                break
 
         for idx, feature in enumerate(feature_list):
             field = dict()
             field["name"] = feature.get("field_nm")
             field["field_sn"] = feature.get("field_idx")
             field["field_type"] = feature.get("field_type")
+            class_nm = None
 
             if idx == 0:
                 # Case Target
@@ -44,14 +65,20 @@ class RandomDataProcessor(object):
                 else:
                     class_nm = random.choice(self.LABEL_FN_LIST)
             else:
-                if feature.get("field_type") == "string":
-                    class_nm = random.choice(self.COMMON_FN_LIST)
-                elif feature.get("field_type") == "image":
-                    class_nm = random.choice(self.IMAGE_FN_LIST)
-                elif feature.get("field_type") == "date":
-                    class_nm = random.choice(self.TIME_FN_LIST)
+                if len(is_specific_case) > 0:
+                    for k, v in is_specific_case.items():
+                        if feature.get("field_nm") == k:
+                            class_nm = v
+                            break
                 else:
-                    class_nm = random.choice(self.NUMERIC_FN_LIST)
+                    if feature.get("field_type") == "string":
+                        class_nm = random.choice(self.COMMON_FN_LIST)
+                    elif feature.get("field_type") == "image":
+                        class_nm = random.choice(self.IMAGE_FN_LIST)
+                    elif feature.get("field_type") == "date":
+                        class_nm = random.choice(self.TIME_FN_LIST)
+                    else:
+                        class_nm = random.choice(self.NUMERIC_FN_LIST)
 
             functions: str = self.cvt_fn_info[class_nm]
             # TODO : temp

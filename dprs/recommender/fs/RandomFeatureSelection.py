@@ -11,11 +11,16 @@ class RandomFeatureSelection(object):
     Logger = Common.LOGGER.getLogger()
 
     @staticmethod
-    def recommend(meta_list: List[Dict], target_field: str):
+    def recommend(meta_list: List[Dict], target_field: str, project_tag_list: List[str]):
         target = []
         none_target = []
         target_field_nm = []
         feature_field_nm = []
+        is_specific_case = {
+            "dga": ["query"],
+            "packet": ["query", "TTLs", "rtt"]
+        }  # available value : "dga", "packet"
+
 
         for idx, meta in enumerate(meta_list):
             if meta.get("field_nm") == target_field:
@@ -25,9 +30,27 @@ class RandomFeatureSelection(object):
                 none_target.append(meta)
 
         RandomFeatureSelection.Logger.info("target : {}".format(target_field_nm))
-
         max_features = len(none_target)
-        selections = random.sample(none_target, random.randint(1, max_features))
+        RandomFeatureSelection.Logger.info("max_feature : {}".format(max_features))
+
+        selections = list()
+        field_list_to_find = list()
+        for tag in project_tag_list:
+            if "dga" in tag.lower():
+                field_list_to_find = is_specific_case["dga"]
+                break
+            elif "packet" in tag.lower():
+                field_list_to_find = is_specific_case["packet"]
+                break
+
+        if len(field_list_to_find) > 0:
+            for field_name in field_list_to_find:
+                for field_meta in none_target:
+                    if field_meta.get("field_nm") == field_name:
+                        selections.append(field_meta)
+
+        if len(selections) == 0:
+            selections = random.sample(none_target, random.randint(1, max_features))
 
         RandomFeatureSelection.Logger.info("max_feature : {}".format(max_features))
         for _meta in selections:
