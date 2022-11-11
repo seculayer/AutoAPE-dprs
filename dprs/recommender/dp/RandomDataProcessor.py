@@ -22,9 +22,8 @@ class RandomDataProcessor(object):
             },
             "packet": {
                 "query": "DGAChar2IDX",
-                # TODO : need to change function name
-                "TTLs": "TTLsConvertFn",
-                "rtt": "rttConvertFn"
+                "TTLs": "TTLMinMaxScaler",
+                "rtt": "RTTStandardScaler"
             }
         }
         self.LABEL_FN_LIST = ["OneHotEncode"]
