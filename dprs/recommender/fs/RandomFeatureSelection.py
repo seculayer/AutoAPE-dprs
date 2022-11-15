@@ -18,9 +18,24 @@ class RandomFeatureSelection(object):
         feature_field_nm = []
         is_specific_case = {
             "dga": ["query"],
-            "packet": ["query", "TTLs", "rtt"]
-        }  # available value : "dga", "packet"
-
+            "packet": ["query", "rtt"],
+            "meta": [
+                "query",
+                "not_before",
+                "dns_recode_recode_ttl",
+                "vt_whois_createDate@COMMA@vt_whois_expiryDate",
+                "vt_whois_createDate@COMMA@vt_whois_updateDate",
+                "dns_recode_type",
+                "dns_recode_recode_ttl",
+                "resolutions_count",
+                "malicious",
+                "popularity_ranks",
+                "popularity_ranks",
+                "popularity_ranks",
+                "popularity_ranks",
+                "popularity_ranks",
+             ]
+        }  # available value : "dga", "packet", meta
 
         for idx, meta in enumerate(meta_list):
             if meta.get("field_nm") == target_field:
@@ -41,6 +56,9 @@ class RandomFeatureSelection(object):
                 break
             elif "packet" in tag.lower():
                 field_list_to_find = is_specific_case["packet"]
+                break
+            elif "meta" in tag.lower():
+                field_list_to_find = is_specific_case["meta"]
                 break
 
         if len(field_list_to_find) > 0:
