@@ -24,20 +24,21 @@ class RandomDataProcessor(object):
 
         # META
         self.META_LIST = [
-            [1, "query", ["DNSMetaPreProcessing",[]]],
-            [2, "not_before", ["DateRemaining",[]]],
-            [3, "dns_recode_recode_ttl", ["ListStddev",[]]],
-            [4, "vt_whois_createDate@COMMA@vt_whois_expiryDate", ["DateDiff", []]],
-            [5, "vt_whois_createDate@COMMA@vt_whois_updateDate", ["DateDiff", []]],
-            [6, "dns_recode_type", ["ListUniqueType", []]],
-            [7, "dns_recode_recode_ttl", ["ListLength", []]],
-            [8, "resolutions_count", ["ListFirstValue", []]],
-            [9, "malicious", ["VTMalicious", []]],
-            [10, "popularity_ranks", ["VTPopularityRank", ["majestic"]]],
-            [11, "popularity_ranks", ["VTPopularityRank", ["cisco"]]],
-            [12, "popularity_ranks", ["VTPopularityRank", ["statvoo"]]],
-            [13, "popularity_ranks", ["VTPopularityRank", ["alexa"]]],
-            [14, "popularity_ranks", ["VTPopularityRank", ["quantcast"]]],
+            [],  # label
+            [1, "query", ["DNSMetaPreProcessing", []]],
+            [2, "vtdlast_https_certificate_not_after", ["DateRemaining", []]],
+            [3, "vtdlast_dns_records_TTL", ["ListStddev", []]],
+            [4, "vtdwhois_create_date@COMMA@vtdwhois_expiry_date", ["DateDiff", []]],
+            [5, "vtdwhois_create_date@COMMA@vtdwhois_expiry_date", ["DateDiff", []]],
+            [6, "vtdlast_dns_records_type", ["ListUniqueType", []]],
+            [7, "vtdlast_dns_records_TTL", ["ListLength", []]],
+            [8, "vtdresolutions_count", ["ListFirstValue", []]],
+            [9, "vtdlast_analysis_stats", ["VTMalicious", []]],
+            [10, "vtdpopularity", ["VTPopularityRank", ["majestic"]]],
+            [11, "vtdpopularity", ["VTPopularityRank", ["cisco"]]],
+            [12, "vtdpopularity", ["VTPopularityRank", ["statvoo"]]],
+            [13, "vtdpopularity", ["VTPopularityRank", ["alexa"]]],
+            [14, "vtdpopularity", ["VTPopularityRank", ["quantcast"]]],
         ]
 
     def get_cvt_fn(self):
@@ -58,16 +59,19 @@ class RandomDataProcessor(object):
             elif project_purpose_cd == "10":   # TA
                 class_nm_set = ["NotNormal", []]
         else:
-            if "dga" in project_tag:
-                class_nm_set = self._func_class_nm_dga(field_nm, field_type)
-            elif "packet" in project_tag:
-                class_nm_set = self._func_class_nm_dns_packet(field_nm, field_type)
+            if project_tag is not None:
+                if "dga" in project_tag:
+                    class_nm_set = self._func_class_nm_dga(field_nm, field_type)
+                elif "packet" in project_tag:
+                    class_nm_set = self._func_class_nm_dns_packet(field_nm, field_type)
+                elif "meta" in project_tag:
+                    class_nm_set = self._func_class_nm_dns_meta(idx, field_nm, field_type)
 
         return self._append_arg_list(class_nm_set)
 
     def _func_class_nm_random(self, field_type):
         if field_type == "string":
-            random.choice(self.COMMON_FN_LIST)
+            return random.choice(self.COMMON_FN_LIST)
         elif field_type == "image":
             return random.choice(self.IMAGE_FN_LIST)
         elif field_type == "date":
@@ -76,15 +80,15 @@ class RandomDataProcessor(object):
             return random.choice(self.NUMERIC_FN_LIST)
 
     def _func_class_nm_dga(self, field_nm, field_type):
-        if field_nm == "query":
+        if field_nm.lower() == "query":
             return ["DGAChar2IDX", []]
         else:
             return self._func_class_nm_random(field_type)
 
     def _func_class_nm_dns_packet(self, field_nm, field_type):
-        if field_nm == "query":
+        if field_nm.lower() == "query":
             return ["DNSDomainPreProcessing", []]
-        elif field_type == "rtt":
+        elif field_nm.lower() == "rtt":
             return ["ZScoreNormal", []]
         else:
             return self._func_class_nm_random(field_type)
@@ -108,10 +112,13 @@ class RandomDataProcessor(object):
         for tag in project_tag_list:
             if "dga" in tag.lower():
                 project_tag = "dga"
+                break
             elif "packet" in tag.lower():
                 project_tag = "packet"
+                break
             elif "meta" in tag.lower():
                 project_tag = "meta"
+                break
 
         result = list()
         for idx, feature in enumerate(feature_list):

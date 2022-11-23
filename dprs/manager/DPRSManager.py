@@ -60,6 +60,7 @@ class DPRSManager(object):
         project_target_field = response.text.replace("\n", "").replace("\"", "")
         project_purpose_cd = self.job_info.get("project_purpose_cd")
         project_tag_list = rq.get(f"{self.rest_root_url}/mrms/get_project_tag?project_id={job_id}").text.split(",")
+        self.logger.info(f"project_tag_list: {project_tag_list}")
         self.logger.info(f"get target field: {response.status_code} {response.reason} {project_target_field}")
 
         for i in range(random.randint(Constants.RCMD_MIN_COUNT, Constants.RCMD_MAX_COUNT)):
@@ -68,7 +69,8 @@ class DPRSManager(object):
             )
             # target idx는 0
             functions = RandomDataProcessor().recommend(feature_selection, project_purpose_cd, project_tag_list)
-            self.logger.debug(f"project_id: {job_id}, Recommended: {functions}")
+            for func in functions:
+                self.logger.info(f"project_id: {job_id}, field_name: {func['name']}, Recommended: {func['functions']}")
 
             body_json = {
                 "project_id": job_id,

@@ -21,19 +21,19 @@ class RandomFeatureSelection(object):
             "packet": ["query", "rtt"],
             "meta": [
                 "query",
-                "not_before",
-                "dns_recode_recode_ttl",
-                "vt_whois_createDate@COMMA@vt_whois_expiryDate",
-                "vt_whois_createDate@COMMA@vt_whois_updateDate",
-                "dns_recode_type",
-                "dns_recode_recode_ttl",
-                "resolutions_count",
-                "malicious",
-                "popularity_ranks",
-                "popularity_ranks",
-                "popularity_ranks",
-                "popularity_ranks",
-                "popularity_ranks",
+                "vtdlast_https_certificate_not_after",
+                "vtdlast_dns_records_TTL",
+                "vtdwhois_create_date@COMMA@vtdwhois_expiry_date",
+                "vtdwhois_create_date@COMMA@vtdwhois_expiry_date",
+                "vtdlast_dns_records_type",
+                "vtdlast_dns_records_TTL",
+                "vtdresolutions_count",
+                "vtdlast_analysis_stats",
+                "vtdpopularity",
+                "vtdpopularity",
+                "vtdpopularity",
+                "vtdpopularity",
+                "vtdpopularity",
              ]
         }  # available value : "dga", "packet", meta
 
@@ -62,10 +62,30 @@ class RandomFeatureSelection(object):
                 break
 
         if len(field_list_to_find) > 0:
+            meta_idx = len(meta_list)
             for field_name in field_list_to_find:
+                is_existed = False
                 for field_meta in none_target:
-                    if field_meta.get("field_nm") == field_name:
+                    if field_meta.get("field_nm").lower() == field_name:
                         selections.append(field_meta)
+                        is_existed = True
+                if not is_existed:
+                    tmp_meta = {
+                        "field_nm": field_name,
+                        "field_idx": meta_idx,
+                        "field_type": "null",
+                        "type_stat": {},
+                        "statistics": {
+                            "basic": {
+                                "min": 0,
+                                "max": 0,
+                                "mean": 0
+                            }
+                        },
+                        "field_tag": []
+                    }
+                    meta_idx += 1
+                    selections.append(tmp_meta)
 
         if len(selections) == 0:
             selections = random.sample(none_target, random.randint(1, max_features))
