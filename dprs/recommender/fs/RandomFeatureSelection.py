@@ -18,7 +18,7 @@ class RandomFeatureSelection(object):
         feature_field_nm = []
         is_specific_case = {
             "dga": ["query"],
-            "packet": ["query", "rtt"],
+            "packet": ["query", "AA", "RD", "prtc", "Z", "RA", "TC", "TTLs"],
             "meta": [
                 "query",
                 "vtdlast_https_certificate_not_after",
@@ -66,7 +66,7 @@ class RandomFeatureSelection(object):
             for field_name in field_list_to_find:
                 is_existed = False
                 for field_meta in none_target:
-                    if field_meta.get("field_nm").lower() == field_name:
+                    if field_meta.get("field_nm").lower() == field_name.lower():
                         selections.append(field_meta)
                         is_existed = True
                 if not is_existed:

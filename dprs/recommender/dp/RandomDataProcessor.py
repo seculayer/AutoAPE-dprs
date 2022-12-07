@@ -15,7 +15,7 @@ class RandomDataProcessor(object):
         self.rest_root_url = f"http://{Constants.MRMS_SVC}:{Constants.MRMS_REST_PORT}"
         self.cvt_fn_info = self.get_cvt_fn()
         self.COMMON_FN_LIST = [["SISpWC", ["64", "255"]], ["XSSpWC", ["64", "255"]]]  # , "SpecialCharExtract"]
-        self.NUMERIC_FN_LIST = [["NotNormal", []], ["OneHotEncode", []],
+        self.NUMERIC_FN_LIST = [["NotNormal", []],
                                 ["ZScoreNormal", []], ["PortNormal", []],
                                 ["MinMaxNormal", []]]
         self.LABEL_FN_LIST = [["OneHotEncode", []]]
@@ -88,8 +88,10 @@ class RandomDataProcessor(object):
     def _func_class_nm_dns_packet(self, field_nm, field_type):
         if field_nm.lower() == "query":
             return ["DNSDomainPreProcessing", []]
-        elif field_nm.lower() == "rtt":
-            return ["ZScoreNormal", []]
+        elif field_nm.lower() in ["aa", "rd", "prtc", "z", "ra", "tc"]:
+            return ["OneHotEncode", []]
+        elif field_nm.lower() == "ttls":
+            return ["TTLsConv", []]
         else:
             return self._func_class_nm_random(field_type)
 
