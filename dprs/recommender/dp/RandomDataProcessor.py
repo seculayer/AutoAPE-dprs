@@ -19,7 +19,7 @@ class RandomDataProcessor(object):
                                 ["ZScoreNormal", []], ["PortNormal", []],
                                 ["MinMaxNormal", []]]
         self.LABEL_FN_LIST = [["OneHotEncode", []]]
-        self.IMAGE_FN_LIST = [["NotNormal", []]]
+        self.IMAGE_FN_LIST = [["NotNormal", []], ["ImageCLAHE", []]]
         self.TIME_FN_LIST = [["TimeToSerial", []]]
 
         # META
