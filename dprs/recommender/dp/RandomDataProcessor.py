@@ -3,6 +3,7 @@
 # e-mail : jin.kim@seculayer.com
 # Powered by Seculayer © 2021 AI Service Model Team, R&D Center.
 
+from typing import Dict
 import requests as rq
 import json
 import random
@@ -19,6 +20,7 @@ class RandomDataProcessor(object):
                                 ["ZScoreNormal", []], ["PortNormal", []],
                                 ["MinMaxNormal", []]]
         self.LABEL_FN_LIST = [["OneHotEncode", []]]
+        self.CATEGORY_FN_LIST = [["LabelEncode", []]]
         self.IMAGE_FN_LIST = [["NotNormal", []], ["ImageCLAHE", []]]
         self.TIME_FN_LIST = [["TimeToSerial", []]]
 
@@ -49,14 +51,14 @@ class RandomDataProcessor(object):
             result_dict[fn.get("conv_func_cls")] = fn.get("conv_func_tag")
         return result_dict
 
-    def _function_recommend(self, idx, project_purpose_cd, field_nm, field_type, project_tag):
-        class_nm_set = self._func_class_nm_random(field_type)
+    def _function_recommend(self, idx, project_purpose_cd, field_nm, field_type, project_tag, statistics):
+        class_nm_set = self._func_class_nm_random(field_type, statistics)
 
         if idx == 0:
             # Case Target
             if project_purpose_cd == "1":  # classification
                 class_nm_set = random.choice(self.LABEL_FN_LIST)
-            elif project_purpose_cd == "10":   # TA
+            elif project_purpose_cd == "10":  # TA
                 class_nm_set = ["NotNormal", []]
         else:
             if project_tag is not None:
@@ -69,9 +71,15 @@ class RandomDataProcessor(object):
 
         return self._append_arg_list(class_nm_set)
 
-    def _func_class_nm_random(self, field_type):
+    def _func_class_nm_random(self, field_type, statistics: Dict = None):
         if field_type == "string":
-            return random.choice(self.COMMON_FN_LIST)
+            if statistics is None:
+                return random.choice(self.COMMON_FN_LIST)
+            else:
+                if statistics.get("is_category", None) == "True":
+                    return random.choice(self.CATEGORY_FN_LIST)
+                else:
+                    return random.choice(self.COMMON_FN_LIST)
         elif field_type == "image":
             return random.choice(self.IMAGE_FN_LIST)
         elif field_type == "date":
@@ -130,7 +138,7 @@ class RandomDataProcessor(object):
             field["field_type"] = feature.get("field_type")
             field["functions"] = self._function_recommend(
                 idx, project_purpose_cd, feature.get("field_nm"),
-                feature.get("field_type"), project_tag)
+                feature.get("field_type"), project_tag, feature.get("statistics", {}))
             field["statistic"] = feature.get("statistics", {})
             result.append(field)
         return result
