@@ -57,15 +57,15 @@ class DPRSManager(object):
     def recommender(self, job_id):
         results = list()
         response = rq.post(f"{self.rest_root_url}/mrms/get_target_field", json={"project_id": job_id})
-        project_target_field = response.text.replace("\n", "").replace("\"", "")
+        target_field = response.text.replace("\n", "").replace("\"", "")
         project_purpose_cd = self.job_info.get("project_purpose_cd")
         project_tag_list = rq.get(f"{self.rest_root_url}/mrms/get_project_tag?project_id={job_id}").text.split(",")
         self.logger.info(f"project_tag_list: {project_tag_list}")
-        self.logger.info(f"get target field: {response.status_code} {response.reason} {project_target_field}")
+        self.logger.info(f"get target field: {response.status_code} {response.reason} {target_field}")
 
         for i in range(random.randint(Constants.RCMD_MIN_COUNT, Constants.RCMD_MAX_COUNT)):
             feature_selection = RandomFeatureSelection().recommend(
-                self.dataset_meta.get("meta"), project_target_field, project_tag_list
+                self.dataset_meta.get("meta"), target_field, project_tag_list
             )
             # target idx는 0
             functions = RandomDataProcessor().recommend(feature_selection, project_purpose_cd, project_tag_list)
