@@ -1,39 +1,47 @@
-FROM registry.seculayer.com:31500/ape/python-base:py3.7 as builder
-ARG app="/opt/app"
+# syntax=docker/dockerfile:1.3
+FROM seculayer/python:3.7 AS builder
+ARG APP_DIR="/opt/app"
 
-RUN mkdir -p $app
-WORKDIR $app
+ENV POETRY_VERSION=1.1.13 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    PATH="/root/.local/bin:$PATH"
 
-COPY ./requirements.txt ./requirements.txt
-RUN pip3.7 install -r ./requirements.txt -t $app/lib
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install install pipx
+RUN pipx ensurepath
+RUN pipx install "poetry==$POETRY_VERSION"
 
-COPY ./dprs ./dprs
-COPY ./setup.py ./setup.py
+WORKDIR ${APP_DIR}
 
-RUN pip3.7 install wheel
-RUN python3.7 setup.py bdist_wheel
+COPY pyproject.toml poetry.lock ${APP_DIR}
 
-FROM registry.seculayer.com:31500/ape/python-base:py3.7 as app
-ARG app="/opt/app"
+RUN --mount=type=secret,id=gitconfig,target=/root/.gitconfig,required=true \
+    --mount=type=secret,id=cert,required=true \
+    # --mount=type=cache,target=/root/.cache/pypoetry/cache \
+    # --mount=type=cache,target=/root/.cache/pypoetry/artifacts \
+    poetry install --no-dev --no-root --no-interaction --no-ansi
+
+
+FROM seculayer/python:3.7 AS app
+ARG APP_DIR="/opt/app/"
+ARG CLOUD_AI_DIR="/eyeCloudAI/app/ape/dprs/"
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 
-RUN mkdir -p /eyeCloudAI/app/ape/dprs
-WORKDIR /eyeCloudAI/app/ape/dprs
-
-COPY ./dprs.sh /eyeCloudAI/app/ape/dprs
-
-COPY --from=builder "$app/lib" /eyeCloudAI/app/ape/dprs/lib
-
-COPY --from=builder "$app/dist/dprs-1.0.0-py3-none-any.whl" \
-        /eyeCloudAI/app/ape/dprs/dprs-1.0.0-py3-none-any.whl
-
-RUN pip3.7 install /eyeCloudAI/app/ape/dprs/dprs-1.0.0-py3-none-any.whl --no-dependencies  \
-    -t /eyeCloudAI/app/ape/dprs \
-    && rm /eyeCloudAI/app/ape/dprs/dprs-1.0.0-py3-none-any.whl
+RUN mkdir -p ${CLOUD_AI_DIR}
+WORKDIR ${CLOUD_AI_DIR}
 
 RUN groupadd -g 1000 aiuser
 RUN useradd -r -u 1000 -g aiuser aiuser
 RUN chown -R aiuser:aiuser /eyeCloudAI
 USER aiuser
 
-CMD []
+COPY --chown=aiuser:aiuser --from=builder ${APP_DIR}/.venv ${CLOUD_AI_DIR}/.venv
+
+COPY --chown=aiuser:aiuser dprs ${CLOUD_AI_DIR}/dprs
+
+COPY --chown=aiuser:aiuser dprs.sh ${CLOUD_AI_DIR}
+RUN chmod +x ${CLOUD_AI_DIR}/dprs.sh
+
+ENV PATH="${CLOUD_AI_DIR}/.venv/bin:$PATH"
+
+CMD ["${CLOUD_AI_DIR}/dprs.sh", "0", "chief", "0"]

@@ -1,6 +1,6 @@
 import time
-from dprs.common.Singleton import Singleton
-from dprs.common.thread.KubePodSafetyTermThread import KubePodSafetyTermThread
+from pycmmn.Singleton import Singleton
+from pycmmn.KubePodSafetyTermThread import KubePodSafetyTermThread
 from dprs.common.Common import Common
 from dprs.common.Constants import Constants
 from dprs.manager.DPRSManager import DPRSManager
@@ -9,7 +9,7 @@ from dprs.manager.DPRSManager import DPRSManager
 class DataProcessRecommender(KubePodSafetyTermThread, metaclass=Singleton):
     def __init__(self, job_id: str, job_idx: str):
         KubePodSafetyTermThread.__init__(self)
-        self.logger = Common.LOGGER.get_logger()
+        self.logger = Common.LOGGER.getLogger()
         self.job_id = job_id
 
         self.dprs_manager = DPRSManager(job_id, job_idx)
