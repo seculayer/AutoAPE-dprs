@@ -15,7 +15,7 @@ class RandomDataProcessor(object):
     def __init__(self):
         self.rest_root_url = f"http://{Constants.MRMS_SVC}:{Constants.MRMS_REST_PORT}"
         self.cvt_fn_info = self.get_cvt_fn()
-        self.COMMON_FN_LIST = [["SISpWC", ["64", "255"]], ["XSSpWC", ["64", "255"]], ["TMSSpWC", ["64", "255"]]]  # , "SpecialCharExtract"]
+        self.COMMON_FN_LIST = [["SISpWC", ["1024", "255"]], ["XSSpWC", ["1024", "255"]], ["TMSSpWC", ["1024", "255"]]]  # , "SpecialCharExtract"]
         self.NUMERIC_FN_LIST = [["NotNormal", []],
                                 ["ZScoreNormal", []], ["PortNormal", []],
                                 ["MinMaxNormal", []]]
